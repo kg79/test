@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html>
+  <head><style>
+body{font-family:helvetica;}
+canvas{border: 1px solid black;background:white;}
+div {background:#ccc;width:fit-content;text-align:center;margin:auto;float:right; margin:5%;}
+label {position:relative;padding-left:8%;}
+fieldset {float:right;width:fit-content;}
+section {text-align:center;}
+section:nth-child(1) {background:hsla(179, 34%, 48%, 0.89);}
+section:nth-child(2) {background:hsla(0, 66%, 62%, 0.95);}
+section:nth-child(3) {background:hsla(131, 82%, 60%, 0.94);}
+section:nth-child(4) {background:hsla(231, 82%, 60%, 0.94);}
+input {width:60px;text-align:center;}
+p{float:right;position:absolute;right:860px;top:190px;}
+article {float:right;position:relative;margin:auto;top:-300px;background:#222;color:#eee;
+border-radius:7px;padding:1%;}
+  </style><script>
+  const atx = new AudioContext();
+
+  let oscID0, oscID1, oscID2, oscID3, oscID4, oscID5, oscID6, oscID7, oscID8, oscID9,
+  oscID10, oscID11, oscID12, oscID13, oscID14, oscID15, oscID16, oscID17, oscID18, oscID19,
+  oscID20, oscID21, oscID22, oscID23, oscID24, oscID25;
+
+  let volumeID0, volumeID1, volumeID2, volumeID3, volumeID4, volumeID5, volumeID6, volumeID7, volumeID8,
+  volumeID9, volumeID10, volumeID11, volumeID12, volumeID13, volumeID14, volumeID15, volumeID16, volumeID17,
+  volumeID18, volumeID19, volumeID20, volumeID21, volumeID22, volumeID23, volumeID24, volumeID25;
+
+  const key = [
+    {letter:'Q', number:81},
+    {letter:'W', number:87},
+    {letter:'E', number:69},
+    {letter:'R', number:82},
+    {letter:'T', number:84},
+    {letter:'Y', number:89},
+    {letter:'U', number:85},
+    {letter:'I', number:73},
+    {letter:'O', number:79},
+    {letter:'P', number:80},
+    {letter:'A', number:65},
+    {letter:'S', number:83},
+    {letter:'D', number:68},
+    {letter:'F', number:70},
+    {letter:'G', number:71},
+    {letter:'H', number:72},
+    {letter:'J', number:74},
+    {letter:'K', number:75},
+    {letter:'L', number:76},
+    {letter:'Z', number:90},
+    {letter:'X', number:88},
+    {letter:'C', number:67},
+    {letter:'V', number:86},
+    {letter:'B', number:66},
+    {letter:'N', number:78},
+    {letter:'M', number:77},
+    {up:38},
+    {right:39},
+    {down:40},
+    {left:37}
+  ];
+  </script>
+    <meta charset="utf-8">
+  </head><body>
+    <fieldset>
+    <label>Gain</label><label>Root</label><label># of notes</label><label>wave</label><br/>
+  <input type='range' min='0' max='10' value='5' name='gain'></input>
+  <input type='number' value='432' name='root'></input>
+  <input type='number' value='200' name='limit'></input>
+  <select>
+<option value='sine'>sine</option>
+<option value='square'>square</option>
+<option value='triangle'>triangle</option>
+<option value='sawtooth'>sawtooth</option>
+  </select>
+</fieldset>
+  <div></div>
+  <canvas height='400' width='400'></canvas><p>0</p><br/><br/>
+  <table>
+<tr><td><td><td><td><td><td><td><td><td><td>
+<tr><td><td><td><td><td><td><td><td><td>
+<tr><td><td><td><td><td><td><td>
+  </table>
+<article>
+documentation
+</article>
+  <script>
+
+const canvasHandle = document.getElementsByTagName('canvas')[0];
+const contextHandle = canvasHandle.getContext('2d');
+const tableCell = document.getElementsByTagName('td');
+const rootInputHandle = document.getElementsByTagName('input')[1];
+const noteArraySizeHandle = document.getElementsByTagName('input')[2];
+const volumeSlider = document.getElementsByTagName('input')[0];
+const guiTab = document.getElementsByTagName('section');
+const waveForm = document.getElementsByTagName('select')[0];
+const transcriber = document.getElementsByTagName('div')[0];
+let count = 0, writing = false;
+
+transcriber.onmouseover = () => {
+  transcriber.innerText = '';
+}
+
+waveForm.onchange = () => {
+
+  note[ 0].changeWaveForm();
+  note[ 1].changeWaveForm();
+  note[ 2].changeWaveForm();
+  note[ 3].changeWaveForm();
+  note[ 4].changeWaveForm();
+  note[ 5].changeWaveForm();
+  note[ 6].changeWaveForm();
+  note[ 7].changeWaveForm();
+  note[ 8].changeWaveForm();
+  note[ 9].changeWaveForm();
+  note[10].changeWaveForm();
+  note[11].changeWaveForm();
+  note[12].changeWaveForm();
+  note[13].changeWaveForm();
+  note[14].changeWaveForm();
+  note[15].changeWaveForm();
+  note[16].changeWaveForm();
+  note[17].changeWaveForm();
+  note[18].changeWaveForm();
+  note[19].changeWaveForm();
+  note[20].changeWaveForm();
+  note[21].changeWaveForm();
+  note[22].changeWaveForm();
+  note[23].changeWaveForm();
+  note[24].changeWaveForm();
+  note[25].changeWaveForm();
+}
+
+
+contextHandle.beginPath();
+contextHandle.arc(200, 200, 200, 0, Math.PI * 2);
+contextHandle.stroke();
+contextHandle.closePath();
+contextHandle.lineJoin = 'round';
+
+rootInputHandle.onchange = () => {
+
+  note[ 0].updateRoot();
+  note[ 1].updateRoot();
+  note[ 2].updateRoot();
+  note[ 3].updateRoot();
+  note[ 4].updateRoot();
+  note[ 5].updateRoot();
+  note[ 6].updateRoot();
+  note[ 7].updateRoot();
+  note[ 8].updateRoot();
+  note[ 9].updateRoot();
+  note[10].updateRoot();
+  note[11].updateRoot();
+  note[12].updateRoot();
+  note[13].updateRoot();
+  note[14].updateRoot();
+  note[15].updateRoot();
+  note[16].updateRoot();
+  note[17].updateRoot();
+  note[18].updateRoot();
+  note[19].updateRoot();
+  note[20].updateRoot();
+  note[21].updateRoot();
+  note[22].updateRoot();
+  note[23].updateRoot();
+  note[24].updateRoot();
+  note[25].updateRoot();
+}
+/**** Harmonic Generator ****/
+let harmonicSeries = [];
+function generateHarmonics(noteArraySize){
+  let numerator = 1, denominator = 2, fractions = [];
+  for(let i = 0; i <= noteArraySize; i++){
+    fractions.push((numerator/denominator));
+    numerator++;
+    if(numerator===denominator){
+      numerator = 1;
+      denominator++;
+    }
+  }
+  harmonicSeries = fractions.filter((item, pos) => {
+    return fractions.indexOf(item) == pos;
+  })
+  return harmonicSeries.sort();
+}
+/********/  generateHarmonics(noteArraySizeHandle.value);
+/**********generate position in note array********/
+let position = [];
+function generatePosition(limit){
+  let thing = Math.floor(limit/27), i = 0;
+  while(i < 26){
+    i++;
+    thing += Math.floor(limit/26);
+    position.splice(i, 1, thing);
+  }
+  return position;
+}
+generatePosition(harmonicSeries.length);
+/********/
+
+noteArraySizeHandle.onchange = () => {
+
+  generateHarmonics(noteArraySizeHandle.value);
+  generatePosition(harmonicSeries.length);
+
+    note[ 0].updateNoteArraySize();
+    note[ 1].updateNoteArraySize();
+    note[ 2].updateNoteArraySize();
+    note[ 3].updateNoteArraySize();
+    note[ 4].updateNoteArraySize();
+    note[ 5].updateNoteArraySize();
+    note[ 6].updateNoteArraySize();
+    note[ 7].updateNoteArraySize();
+    note[ 8].updateNoteArraySize();
+    note[ 9].updateNoteArraySize();
+    note[10].updateNoteArraySize();
+    note[11].updateNoteArraySize();
+    note[12].updateNoteArraySize();
+    note[13].updateNoteArraySize();
+    note[14].updateNoteArraySize();
+    note[15].updateNoteArraySize();
+    note[16].updateNoteArraySize();
+    note[17].updateNoteArraySize();
+    note[18].updateNoteArraySize();
+    note[19].updateNoteArraySize();
+    note[20].updateNoteArraySize();
+    note[21].updateNoteArraySize();
+    note[22].updateNoteArraySize();
+    note[23].updateNoteArraySize();
+    note[24].updateNoteArraySize();
+    note[25].updateNoteArraySize();
+}
+
+let x = [
+{val:undefined, deg:undefined},
+{val:undefined, deg:undefined},
+{val:undefined, deg:undefined},
+{val:undefined, deg:undefined},
+{val:undefined, deg:undefined},
+]
+let y = [
+{val:undefined},
+{val:undefined},
+{val:undefined},
+{val:undefined},
+{val:undefined},
+]
+
+  class Music {
+    constructor (name, pitch, volumeNode, numero, playing){
+      this.name = name;
+      this.pitch = pitch;
+      this.volumeNode = volumeNode;
+      this.numero = numero;
+      this.playing = false;
+    }
+    changeWaveForm(){
+      this.name.type = waveForm.value;
+    }
+    writeStats(){
+      tableCell[this.numero].innerHTML =
+      '<section>' + key[this.numero].letter + '</section>' +
+      '<section>' + this.pitch.toFixed(3) + '</section>' +
+       '<section>' + position[this.numero] + '</section>'+
+      '<section>' + (harmonicSeries[position[this.numero]]).toPrecision(4) + '</section>';
+    }
+    corePlay(){
+      this.name = atx.createOscillator();
+      this.volumeNode = atx.createGain();
+      this.name.frequency.value = this.pitch;
+      this.volumeNode.gain.value = volumeSlider.value/10;
+      this.name.type = waveForm.value;
+      this.name.connect(this.volumeNode)
+      this.volumeNode.connect(atx.destination);
+      this.name.start(0);
+    }
+    on(){
+      if(this.playing===false){
+        this.corePlay();
+        this.playing = true;
+        this.writeStats();
+        this.graphStats();
+        tableCell[this.numero].style.border = 'red ridge 3px';
+        if(writing === true){
+          transcriber.innerHTML += key[this.numero].letter + '  ' + this.pitch.toPrecision(5) + '<br/>';
+        }
+      }
+    }
+    off(){
+      this.name.stop(0);
+      this.playing = false;
+      this.eraseGraphStats();
+      tableCell[this.numero].style.border = 'white ridge 3px';
+    }
+        setGain(){
+          this.volume = volumeSlider.value;
+          if(this.playing === true){
+            this.name.stop(0);
+            this.corePlay();
+          }
+        }
+    raisePitch(){
+      if(this.playing===true){
+        contextHandle.beginPath();
+        contextHandle.arc(200 + 200*Math.cos((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180)),
+        200 + 200 * Math.sin((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180)), 4, 0, Math.PI*2);
+        contextHandle.strokeStyle = 'white';
+        contextHandle.lineWidth = 5;
+        contextHandle.stroke();
+        contextHandle.closePath();
+        this.name.stop(0);
+        this.pitch = harmonicSeries[++position[this.numero]]*rootInputHandle.value;
+        this.corePlay();
+        this.writeStats();
+        this.graphStats();
+      }
+    }
+    lowerPitch(){
+      if(this.playing===true){
+        contextHandle.beginPath();
+        contextHandle.arc(200 + 200*Math.cos((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180)), 200 + 200 * Math.sin((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180)), 4, 0, Math.PI*2);
+        contextHandle.strokeStyle = 'white';
+        contextHandle.lineWidth = 5;
+        contextHandle.stroke();
+        contextHandle.closePath();
+        this.pitch = harmonicSeries[--position[this.numero]]*rootInputHandle.value;
+        this.name.stop(0);
+        this.corePlay();
+        this.writeStats();
+        this.graphStats();
+      }
+    }
+    updateRoot(){
+        this.pitch = harmonicSeries[position[this.numero]]*rootInputHandle.value;
+        this.writeStats();
+    }
+    updateNoteArraySize(){
+        this.pitch = harmonicSeries[position[this.numero]]*rootInputHandle.value;
+        this.writeStats();
+    }
+    graphStats(){
+      if(count === 0){
+        x[0].val = 200 + 200 * Math.cos((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180));
+        y[0].val = 200 + 200 * Math.sin((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180));
+        x[0].deg = harmonicSeries[position[this.numero]] * 360;
+        contextHandle.beginPath();
+        contextHandle.arc(x[0].val, y[0].val, 4, 0, Math.PI*2);
+        contextHandle.strokeStyle = 'black';
+        contextHandle.lineWidth = 5;
+        contextHandle.stroke();
+        contextHandle.closePath();
+        contextHandle.moveTo(x[0].val, y[0].val);
+        count = 1;
+      }
+      else if(count === 1){
+          x[1].val = 200 + 200*Math.cos((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180));
+          y[1].val = 200 + 200*Math.sin((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180));
+          x[1].deg = harmonicSeries[position[this.numero]] * 360;
+
+          contextHandle.lineTo(x[1].val, y[1].val);
+          contextHandle.stroke();
+          count = 2;
+      }
+      else if (count === 2){
+        x[2].val = 200 + 200 * Math.cos((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180));
+        y[2].val = 200 + 200 * Math.sin((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180));
+        x[2].deg = harmonicSeries[position[this.numero]] * 360;
+
+        contextHandle.lineTo(x[2].val, y[2].val);
+        contextHandle.stroke();
+        contextHandle.lineTo(x[0].val, y[0].val);
+        contextHandle.stroke();
+        count = 3;
+      }
+      else if (count === 3) {
+        x[3].val = 200 + 200 * Math.cos((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180));
+        y[3].val = 200 + 200 * Math.sin((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180));
+        x[3].deg = harmonicSeries[position[this.numero]] * 360;
+        let deg0, deg1, deg2, deg3;
+        let line4Array = ([x[0].deg, x[1].deg, x[2].deg, x[3].deg]).sort(function(a, b){return a - b});
+        contextHandle.beginPath();
+        contextHandle.clearRect(0, 0, 400, 400);
+        contextHandle.arc(200, 200, 200, 0, Math.PI * 2, false);
+        contextHandle.closePath();
+        contextHandle.stroke()
+        contextHandle.beginPath();
+        contextHandle.arc(x[0].val, y[0].val, 4, 0, Math.PI * 2);
+        contextHandle.moveTo(200 + 200 * Math.cos(line4Array[0]*(Math.PI/180)), 200 + 200 * Math.sin(line4Array[0]*(Math.PI/180)));
+        contextHandle.lineTo(200 + 200 * Math.cos(line4Array[1]*(Math.PI/180)), 200 + 200 * Math.sin(line4Array[1]*(Math.PI/180)));
+        contextHandle.lineTo(200 + 200 * Math.cos(line4Array[2]*(Math.PI/180)), 200 + 200 * Math.sin(line4Array[2]*(Math.PI/180)));
+        contextHandle.lineTo(200 + 200 * Math.cos(line4Array[3]*(Math.PI/180)), 200 + 200 * Math.sin(line4Array[3]*(Math.PI/180)));
+        contextHandle.lineTo(200 + 200 * Math.cos(line4Array[0]*(Math.PI/180)), 200 + 200 * Math.sin(line4Array[0]*(Math.PI/180)));
+        contextHandle.stroke()
+        contextHandle.closePath()
+        count = 4;
+      }
+      else if(count === 4){
+        x[4].val = 200 + 200 * Math.cos((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180));
+        y[4].val = 200 + 200 * Math.sin((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180));
+        x[4].deg = harmonicSeries[position[this.numero]] * 360;
+        let deg0, deg1, deg2, deg3, deg4;
+        let line5Array = ([x[0].deg, x[1].deg, x[2].deg, x[3].deg, x[4].deg]).sort(function(a, b){return a - b});
+        contextHandle.beginPath();
+        contextHandle.clearRect(0, 0, 400, 400);
+        contextHandle.arc(200, 200, 200, 0, Math.PI * 2);
+        contextHandle.closePath();
+        contextHandle.stroke()
+        contextHandle.beginPath();
+        contextHandle.arc(200 + 200 * Math.cos(line5Array[0]*(Math.PI/180)), 200 + 200 * Math.sin(line5Array[0]*(Math.PI/180)), 4, 0, Math.PI * 2);
+        contextHandle.moveTo(200 + 200 * Math.cos(line5Array[0]*(Math.PI/180)), 200 + 200 * Math.sin(line5Array[0]*(Math.PI/180)));
+        contextHandle.lineTo(200 + 200 * Math.cos(line5Array[1]*(Math.PI/180)), 200 + 200 * Math.sin(line5Array[1]*(Math.PI/180)));
+        contextHandle.lineTo(200 + 200 * Math.cos(line5Array[2]*(Math.PI/180)), 200 + 200 * Math.sin(line5Array[2]*(Math.PI/180)));
+        contextHandle.lineTo(200 + 200 * Math.cos(line5Array[3]*(Math.PI/180)), 200 + 200 * Math.sin(line5Array[3]*(Math.PI/180)));
+        contextHandle.lineTo(200 + 200 * Math.cos(line5Array[4]*(Math.PI/180)), 200 + 200 * Math.sin(line5Array[4]*(Math.PI/180)));
+        contextHandle.lineTo(200 + 200 * Math.cos(line5Array[0]*(Math.PI/180)), 200 + 200 * Math.sin(line5Array[0]*(Math.PI/180)));
+        contextHandle.stroke()
+        contextHandle.closePath();
+        count = 5;
+      }
+    }
+    eraseGraphStats(){
+      contextHandle.beginPath();
+      contextHandle.arc(200 + 200*Math.cos((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180)),
+      200 + 200 * Math.sin((harmonicSeries[position[this.numero]] * 360)*(Math.PI/180)), 4, 0, Math.PI*2);
+      contextHandle.strokeStyle = 'white';
+      contextHandle.lineWidth = 5;
+      contextHandle.stroke();
+      contextHandle.closePath();
+      contextHandle.clearRect(0, 0, 400, 400);
+      contextHandle.closePath();
+      contextHandle.beginPath()
+      contextHandle.strokeStyle = 'black';
+      contextHandle.arc(200, 200, 200, 0, Math.PI * 2);
+      contextHandle.lineWidth = 1;
+      contextHandle.stroke();
+      contextHandle.closePath();
+      count = 0;
+    }
+  }
+
+let note = [
+new Music( oscID0, harmonicSeries[position[ 0]] * rootInputHandle.value,  volumeID0,  0),
+new Music( oscID1, harmonicSeries[position[ 1]] * rootInputHandle.value,  volumeID1,  1),
+new Music( oscID2, harmonicSeries[position[ 2]] * rootInputHandle.value,  volumeID2,  2),
+new Music( oscID3, harmonicSeries[position[ 3]] * rootInputHandle.value,  volumeID3,  3),
+new Music( oscID4, harmonicSeries[position[ 4]] * rootInputHandle.value,  volumeID4,  4),
+new Music( oscID5, harmonicSeries[position[ 5]] * rootInputHandle.value,  volumeID5,  5),
+new Music( oscID6, harmonicSeries[position[ 6]] * rootInputHandle.value,  volumeID6,  6),
+new Music( oscID7, harmonicSeries[position[ 7]] * rootInputHandle.value,  volumeID7,  7),
+new Music( oscID8, harmonicSeries[position[ 8]] * rootInputHandle.value,  volumeID8,  8),
+new Music( oscID9, harmonicSeries[position[ 9]] * rootInputHandle.value,  volumeID9,  9),
+new Music(oscID10, harmonicSeries[position[10]] * rootInputHandle.value, volumeID10, 10),
+new Music(oscID11, harmonicSeries[position[11]] * rootInputHandle.value, volumeID11, 11),
+new Music(oscID12, harmonicSeries[position[12]] * rootInputHandle.value, volumeID12, 12),
+new Music(oscID13, harmonicSeries[position[13]] * rootInputHandle.value, volumeID13, 13),
+new Music(oscID14, harmonicSeries[position[14]] * rootInputHandle.value, volumeID14, 14),
+new Music(oscID15, harmonicSeries[position[15]] * rootInputHandle.value, volumeID15, 15),
+new Music(oscID16, harmonicSeries[position[16]] * rootInputHandle.value, volumeID16, 16),
+new Music(oscID17, harmonicSeries[position[17]] * rootInputHandle.value, volumeID17, 17),
+new Music(oscID18, harmonicSeries[position[18]] * rootInputHandle.value, volumeID18, 18),
+new Music(oscID19, harmonicSeries[position[19]] * rootInputHandle.value, volumeID19, 19),
+new Music(oscID20, harmonicSeries[position[20]] * rootInputHandle.value, volumeID20, 20),
+new Music(oscID21, harmonicSeries[position[21]] * rootInputHandle.value, volumeID21, 21),
+new Music(oscID22, harmonicSeries[position[22]] * rootInputHandle.value, volumeID22, 22),
+new Music(oscID23, harmonicSeries[position[23]] * rootInputHandle.value, volumeID23, 23),
+new Music(oscID24, harmonicSeries[position[24]] * rootInputHandle.value, volumeID24, 24),
+new Music(oscID25, harmonicSeries[position[25]] * rootInputHandle.value, volumeID25, 25)]
+
+
+volumeSlider.addEventListener('change', () => {
+
+  note[ 0].setGain();
+  note[ 1].setGain();
+  note[ 2].setGain();
+  note[ 3].setGain();
+  note[ 4].setGain();
+  note[ 5].setGain();
+  note[ 6].setGain();
+  note[ 7].setGain();
+  note[ 8].setGain();
+  note[ 9].setGain();
+  note[10].setGain();
+  note[11].setGain();
+  note[12].setGain();
+  note[13].setGain();
+  note[14].setGain();
+  note[15].setGain();
+  note[16].setGain();
+  note[17].setGain();
+  note[18].setGain();
+  note[19].setGain();
+  note[20].setGain();
+  note[21].setGain();
+  note[22].setGain();
+  note[23].setGain();
+  note[24].setGain();
+  note[25].setGain();
+
+})
+
+window.addEventListener('keydown', (e) => {
+  switch(e.keyCode){
+    case key[0].number:
+      note[0].on();
+        break;
+        case key[1].number:
+          note[1].on();
+            break;
+            case key[2].number:
+              note[2].on();
+                break;
+                case key[3].number:
+                  note[3].on();
+                    break;
+                    case key[4].number:
+                      note[4].on();
+                        break;
+                        case key[5].number:
+                          note[5].on();
+                            break;
+                            case key[6].number:
+                              note[6].on();
+                                  break;
+                                  case key[7].number:
+                                    note[7].on();
+                                      break;
+                                      case key[8].number:
+                                        note[8].on();
+                                          break;
+                                          case key[9].number:
+                                            note[9].on();
+                                              break;
+                                              case key[10].number:
+                                                note[10].on();
+                                                  break;
+                                                  case key[11].number:
+                                                    note[11].on();
+                                                      break;
+                                                      case key[12].number:
+                                                        note[12].on();
+                                                          break;
+                                                          case key[13].number:
+                                                            note[13].on();
+                                                          break;
+                                                          case key[14].number:
+                                                        note[14].on();
+                                                      break;
+                                                      case key[15].number:
+                                                    note[15].on();
+                                                  break;
+                                                  case key[16].number:
+                                                note[16].on();
+                                              break;
+                                              case key[17].number:
+                                            note[17].on();
+                                          break;
+                                          case key[18].number:
+                                        note[18].on();
+                                      break;
+                                      case key[19].number:
+                                    note[19].on();
+                                  break;
+                                  case key[20].number:
+                                note[20].on();
+                              break;
+                              case key[21].number:
+                            note[21].on();
+                          break;
+                          case key[22].number:
+                        note[22].on();
+                      break;
+                      case key[23].number:
+                    note[23].on();
+                  break;
+                  case key[24].number:
+                note[24].on();
+              break;
+              case key[25].number:
+            note[25].on();
+          break;
+          case key[26].up:
+        e.preventDefault();
+      note[ 0].raisePitch();
+      note[ 1].raisePitch();
+      note[ 2].raisePitch();
+      note[ 3].raisePitch();
+      note[ 4].raisePitch();
+      note[ 5].raisePitch();
+      note[ 6].raisePitch();
+      note[ 7].raisePitch();
+      note[ 8].raisePitch();
+      note[ 9].raisePitch();
+      note[10].raisePitch();
+      note[11].raisePitch();
+      note[12].raisePitch();
+      note[13].raisePitch();
+      note[14].raisePitch();
+      note[15].raisePitch();
+      note[16].raisePitch();
+      note[17].raisePitch();
+      note[18].raisePitch();
+      note[19].raisePitch();
+      note[20].raisePitch();
+      note[21].raisePitch();
+      note[22].raisePitch();
+      note[23].raisePitch();
+      note[24].raisePitch();
+      note[25].raisePitch();
+    break;
+    case key[28].down:
+  e.preventDefault();
+note[ 0].lowerPitch();
+note[ 1].lowerPitch();
+note[ 2].lowerPitch();
+note[ 3].lowerPitch();
+note[ 4].lowerPitch();
+note[ 5].lowerPitch();
+note[ 6].lowerPitch();
+note[ 7].lowerPitch();
+note[ 8].lowerPitch();
+note[ 9].lowerPitch();
+note[10].lowerPitch();
+note[11].lowerPitch();
+note[12].lowerPitch();
+note[13].lowerPitch();
+note[14].lowerPitch();
+note[15].lowerPitch();
+note[16].lowerPitch();
+note[17].lowerPitch();
+note[18].lowerPitch();
+note[19].lowerPitch();
+note[20].lowerPitch();
+note[21].lowerPitch();
+note[22].lowerPitch();
+note[23].lowerPitch();
+note[24].lowerPitch();
+note[25].lowerPitch();
+  break;
+  case 32:
+    if(writing===false){
+      writing = true;
+    } else {
+      writing = false;
+    }
+      break;
+  }
+});
+
+window.addEventListener('keyup', (e) => {
+  switch(e.keyCode){
+    case key[0].number:
+      note[0].off();
+        break;
+        case key[1].number:
+          note[1].off();
+          break;
+          case key[2].number:
+            note[2].off();
+              break;
+              case key[3].number:
+                note[3].off();
+                  break;
+                  case key[4].number:
+                    note[4].off();
+                      break;
+                      case key[5].number:
+                        note[5].off();
+                          break;
+                          case key[6].number:
+                            note[6].off();
+                              break;
+                              case key[7].number:
+                                note[7].off();
+                                  break;
+                                  case key[8].number:
+                                    note[8].off();
+                                      break;
+                                      case key[9].number:
+                                        note[9].off();
+                                          break;
+                                          case key[10].number:
+                                            note[10].off();
+                                              break;
+                                              case key[11].number:
+                                                note[11].off();
+                                                  break;
+                                                  case key[12].number:
+                                                    note[12].off();
+                                                      break;
+                                                      case key[13].number:
+                                                        note[13].off();
+                                                          break;
+                                                          case key[14].number:
+                                                            note[14].off();
+                                                              break;
+                                                              case key[15].number:
+                                                                note[15].off();
+                                                                  break;
+                                                                  case key[16].number:
+                                                                    note[16].off();
+                                                                      break;
+                                                                      case key[17].number:
+                                                                    note[17].off();
+                                                                  break;
+                                                                  case key[18].number:
+                                                                note[18].off();
+                                                              break;
+                                                              case key[19].number:
+                                                            note[19].off();
+                                                          break;
+                                                          case key[20].number:
+                                                        note[20].off();
+                                                      break;
+                                                      case key[21].number:
+                                                    note[21].off();
+                                                  break;
+                                                  case key[22].number:
+                                                note[22].off();
+                                              break;
+                                              case key[23].number:
+                                            note[23].off();
+                                          break;
+                                          case key[24].number:
+                                        note[24].off();
+                                      break;
+                                      case key[25].number:
+                                    note[25].off();
+                                  break;
+  }
+});
+let art = document.getElementsByTagName('article')[0];
+art.onmouseover = () => {
+  art.innerHTML = 'The graph is intended for octaves to be the same place \
+  on the circle, as it is octaves are basically on opposite sides. Gain is volume, turn down \
+  if sound is overloaded. The Root note frequency is equivalent to standard pitch. # of Notes \
+  refers to how many harmonics you can choose from, thus how finely tuned it\'s capable of being.\
+  (actual # is less because duplicates are removed). Upon affect, the note interface reveals \
+  frequency, position in note array, and decimal multiplied by starting point. (In the future \
+  will also reveal fraction identity). <br/><b>Key Feature:</b> <em>while</em> holding down a \
+  note, press up or down arrow key to change values to the next one in the list. If you exceed \
+  the boundaries, a refresh is inevitable. Also, press the space bar to write down what you\'re \
+  playing, and mouse over to delete.';
+  art.style.width = '500px';
+}
+art.onmouseout = () => {
+  art.innerHTML = 'documentation';
+  art.style.width = 'fit-content';
+}
+    </script>
+  </body>
+</html>
